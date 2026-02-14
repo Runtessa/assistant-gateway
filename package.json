@@ -1,0 +1,14 @@
+{
+  "name": "codex-gateway",
+  "version": "1.0.0",
+  "description": "Codex CLI gateway with HTTP/SSE transport",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
