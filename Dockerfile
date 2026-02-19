@@ -12,6 +12,7 @@ COPY package.json ./package.json
 RUN npm install --omit=dev
 
 COPY index.js ./index.js
+COPY lib ./lib
 
 ENV PORT=4040
 ENV WORKSPACE_ROOT=/workspace
