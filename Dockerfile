@@ -1,18 +1,29 @@
-FROM node:20-bookworm-slim
+# syntax=docker/dockerfile:1.7
+FROM node:22-alpine
 
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends ca-certificates \
-  && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache ca-certificates
 
-RUN npm install -g @openai/codex@latest
+ENV NPM_CONFIG_UPDATE_NOTIFIER=false
+ENV NPM_CONFIG_FUND=false
+ENV NPM_CONFIG_AUDIT=false
+ENV NPM_CONFIG_PROGRESS=false
+ENV NPM_CONFIG_PREFER_OFFLINE=true
+ENV NPM_CONFIG_FETCH_RETRIES=10
+ENV NPM_CONFIG_FETCH_RETRY_MINTIMEOUT=30000
+ENV NPM_CONFIG_FETCH_RETRY_MAXTIMEOUT=300000
+ENV NPM_CONFIG_FETCH_TIMEOUT=1800000
+
+RUN --mount=type=cache,target=/root/.npm,id=npm-codex-global,sharing=locked \
+    npm install -g @openai/codex@latest --no-audit --no-fund
 
 WORKDIR /app
 
-COPY package.json ./package.json
-RUN npm install --omit=dev
+COPY .docker-build/codex-gateway/package.json ./package.json
+RUN --mount=type=cache,target=/root/.npm,id=npm-codex-gateway,sharing=locked \
+    npm install --omit=dev --ignore-scripts --no-audit --no-fund \
+    && npm cache clean --force
 
-COPY index.js ./index.js
-COPY lib ./lib
+COPY .docker-build/codex-gateway/dist ./dist
 
 ENV PORT=4040
 ENV WORKSPACE_ROOT=/workspace
@@ -23,4 +34,4 @@ RUN mkdir -p /data /workspace
 
 EXPOSE 4040
 
-CMD ["node", "index.js"]
+CMD ["node", "dist/index.js"]
