@@ -1,8 +1,6 @@
 # syntax=docker/dockerfile:1.7
 FROM node:22-alpine
 
-RUN apk add --no-cache ca-certificates
-
 ENV NPM_CONFIG_UPDATE_NOTIFIER=false
 ENV NPM_CONFIG_FUND=false
 ENV NPM_CONFIG_AUDIT=false
