@@ -29,8 +29,9 @@ ENV PORT=4040
 ENV WORKSPACE_ROOT=/workspace
 ENV CODEX_GATEWAY_HISTORY_FILE=/data/history.json
 ENV CODEX_GATEWAY_PROFILES_DIR=/data/profiles
+ENV CODEX_GATEWAY_WORKSPACES_DIR=/data/workspaces
 
-RUN mkdir -p /data /workspace
+RUN mkdir -p /data /data/workspaces /workspace
 
 EXPOSE 4040
 
