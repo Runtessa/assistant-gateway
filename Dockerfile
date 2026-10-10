@@ -11,8 +11,7 @@ ENV NPM_CONFIG_FETCH_RETRY_MINTIMEOUT=30000
 ENV NPM_CONFIG_FETCH_RETRY_MAXTIMEOUT=300000
 ENV NPM_CONFIG_FETCH_TIMEOUT=1800000
 
-RUN --mount=type=cache,target=/root/.npm,id=npm-codex-global,sharing=locked \
-    npm install -g @openai/codex@latest --no-audit --no-fund
+RUN npm install -g @openai/codex@latest --no-audit --no-fund
 
 WORKDIR /app
 
@@ -21,8 +20,7 @@ COPY licenses /app/licenses
 
 
 COPY .docker-build/codex-gateway/package.json ./package.json
-RUN --mount=type=cache,target=/root/.npm,id=npm-codex-gateway,sharing=locked \
-    npm install --omit=dev --ignore-scripts --no-audit --no-fund \
+RUN npm install --omit=dev --ignore-scripts --no-audit --no-fund \
     && npm cache clean --force
 
 COPY .docker-build/codex-gateway/dist ./dist
