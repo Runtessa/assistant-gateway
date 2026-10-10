@@ -11,7 +11,8 @@ ENV NPM_CONFIG_FETCH_RETRY_MINTIMEOUT=30000
 ENV NPM_CONFIG_FETCH_RETRY_MAXTIMEOUT=300000
 ENV NPM_CONFIG_FETCH_TIMEOUT=1800000
 
-RUN npm install -g @openai/codex@latest --no-audit --no-fund
+ARG CODEX_CLI_VERSION=0.162.1
+RUN npm install -g @openai/codex@${CODEX_CLI_VERSION} --no-audit --no-fund
 
 WORKDIR /app
 
