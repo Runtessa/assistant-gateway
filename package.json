@@ -9,6 +9,14 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "type": "commonjs"
+  "license": "Apache-2.0",
+  "type": "commonjs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlirezaDadrass/Idp.git"
+  },
+  "engines": {
+    "node": ">=22.13.0 <23"
+  },
+  "private": true
 }

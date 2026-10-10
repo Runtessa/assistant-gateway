@@ -16,6 +16,10 @@ RUN --mount=type=cache,target=/root/.npm,id=npm-codex-global,sharing=locked \
 
 WORKDIR /app
 
+COPY LICENSE NOTICE THIRD_PARTY_NOTICES.md /app/
+COPY licenses /app/licenses
+
+
 COPY .docker-build/codex-gateway/package.json ./package.json
 RUN --mount=type=cache,target=/root/.npm,id=npm-codex-gateway,sharing=locked \
     npm install --omit=dev --ignore-scripts --no-audit --no-fund \
