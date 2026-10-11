@@ -1,6 +1,6 @@
 # Third-party software
 
-Original IdpCore code uses Apache-2.0. Dependencies and bundled third-party code
+Original Runtessa code uses Apache-2.0. Dependencies and bundled third-party code
 retain their own licenses, copyrights and required notices. This file does not
 relicense them. Distributors must retain applicable package/bundle license texts.
 
@@ -20,7 +20,7 @@ its global CLI installation is separate from the lockfile inventory below.
 
 The Compose stacks reference separately distributed upstream images. Node.js,
 PostgreSQL, Redis, Nginx, Alpine Linux and bubblewrap retain their own component
-licenses and notices; IdpCore does not relicense these images. Redis 8.8 is
+licenses and notices; Runtessa does not relicense these images. Redis 8.8 is
 available under RSALv2, SSPLv1 or AGPLv3; the open-source option is AGPLv3.
 Redis 7.4 had no OSI-approved option. See [upstream Redis licensing](https://redis.io/legal/licenses/).
 Distributors of images/binaries must retain the corresponding upstream license texts
