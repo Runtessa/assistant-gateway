@@ -1,0 +1,10 @@
+IdpCore
+Copyright 2026 Alireza Dadrass and IdpCore contributors
+
+Original project code and documentation are licensed under the Apache License,
+Version 2.0. The project name does not imply affiliation with an external identity
+provider, the Apache Software Foundation, or third-party dependency authors.
+
+Third-party software retains its original copyright and license terms. See
+THIRD_PARTY_NOTICES.md and the notices distributed with dependency packages and
+generated browser bundles.
