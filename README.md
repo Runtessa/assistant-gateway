@@ -1,6 +1,73 @@
 # Runtessa assistant-gateway
 
-Optional Codex CLI gateway. Part of the private [Runtessa organization](https://github.com/Runtessa).
+Optional Codex CLI gateway. Part of the [Runtessa organization](https://github.com/Runtessa).
+
+## Connect the Studio assistant
+
+Use Node.js 22.13 or newer in the 22.x line. Install the official CLI with
+`npm install -g @openai/codex`, then start this gateway from the platform checkout:
+
+```sh
+HOST=127.0.0.1 npm --prefix src/codex-gateway start
+```
+
+In `src/ideNew/.env`, configure the existing gateway:
+
+```dotenv
+AGENT_CODEX_GATEWAY_MODE=local
+AGENT_CODEX_GATEWAY_URL=http://127.0.0.1:4040
+AGENT_CODEX_MODEL=
+AI_MODEL=
+```
+
+Open **Assistant settings → Login in browser** in Studio and complete the
+ChatGPT device authorization. Each Studio user has a separate Codex profile;
+the gateway does not inherit your desktop login. No API key is required for
+this sign-in flow. Account access and usage limits still apply.
+
+An empty model setting selects the default from Codex's live `model/list`
+catalog. Studio displays that model and uses it for execution. Set
+`AGENT_CODEX_MODEL` to select a server-managed model explicitly. Optional
+client overrides require `AI_ALLOW_CLIENT_CONFIG=true`.
+An unreachable gateway or failed discovery is reported as an error instead of
+inventing a list of available models. A listed model is not proof of account
+entitlement; verify access by completing an actual assistant request.
+
+For container deployments, keep `AGENT_CODEX_GATEWAY_MODE=container` and configure
+the existing remote container-manager. Container lifecycle buttons are shown
+only in that mode. Keep the gateway on a private network; its HTTP API is an
+internal service, not a public endpoint.
+
+Run gateway checks with `npm --prefix src/codex-gateway test` and the platform
+HTTP/SSE contract checks with `node --test scripts/security/gateway-contracts.test.cjs`.
+
+## Native workspace conversations
+
+Tenant requests use Codex app-server's native `thread/start`, `thread/resume`
+and `turn/start` protocol. Each user/tenant/chat combination has a separate,
+persisted thread; gateway restarts do not discard the Codex conversation.
+The legacy text-summary history is used only by the repository CLI endpoint.
+
+Every turn refreshes the tenant workspace from Studio. Authorized unsaved editor
+buffers replace their saved snapshots, and the current file, open files and
+selection/cursor range are recorded in `.idp/task-state.json`. Codex can read
+the workspace, run commands and edit files using its native tools. Diffs return
+to Studio through the existing validation, authorization and rollback flow.
+Disk files remain authoritative when an external edit occurs between turns.
+Studio refreshes clean editor buffers from saved files. Applying or rolling back
+assistant changes also refreshes the affected open buffers; unrelated unsaved
+edits are retained.
+
+Assistant replies stream as native message deltas. **Stop** aborts the Studio
+request and interrupts the native Codex turn. Requests to the same workspace
+allow only one active turn; concurrent requests receive an error. Users,
+tenants and chats have separate thread identities.
+Native turns have a 30-minute execution deadline, configurable with
+`AGENT_CODEX_TIMEOUT_MS`. A deadline reports a timeout separately from a user Stop.
+Read-only requests use a read-only sandbox. Write requests stay in the tenant
+workspace, with network access disabled for model-generated commands.
+Interactive app-server approval or input forms are not implemented in Studio;
+requests requiring them report an error rather than granting approval silently.
 
 ## Development workspace
 
@@ -20,3 +87,18 @@ History was extracted from `src/codex-gateway` at platform commit `c25521a53a10b
 Author identities, dates and commit messages are preserved; extracted commit IDs differ because paths are rooted here.
 The complete original commit graph, all historical paths, branches, issues and pull requests remain in `Runtessa/platform`.
 Apache-2.0; retain LICENSE, NOTICE and third-party notices.
+
+### Attachments
+
+Tenant `/v1/exec` requests may include up to five validated `attachments` with
+`id`, `name`, `kind`, `mime` and `base64`, plus optional preview region metadata.
+Studio resolves these bytes from user/tenant-owned storage before calling the
+gateway. The gateway checks encoding, format and size again. It accepts only
+inline reference bytes; attachment URLs and caller-supplied filesystem paths
+are never fetched or opened.
+
+Text/source contents become native reference input; PNG/JPEG/WebP images become
+actual `turn/start` image input items. Preview notes and normalized coordinates
+accompany the flattened screenshot. Attachments are not workspace mutations and
+do not appear in code diffs. Native threads can retain their input contents;
+Studio's seven-day attachment-download expiry does not purge Codex history.
