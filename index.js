@@ -1,5 +1,5 @@
 const http = require("node:http");
-const { PORT, ROOT_DIR, HISTORY_FILE } = require("./lib/config");
+const { PORT, HOST, ROOT_DIR, HISTORY_FILE } = require("./lib/config");
 const { handleRequest } = require("./lib/router");
 const { loadHistoryFromDisk, chatSessions } = require("./lib/chatHistory");
 const { stopAllLoginChildren, sweepExpiredLoginSessions } = require("./lib/loginFlow");
@@ -27,7 +27,7 @@ const start = async () => {
   console.log(
     `[codex-gateway] loaded ${chatSessions.size} persisted chat context(s) from ${HISTORY_FILE}`,
   );
-  server.listen(PORT, "0.0.0.0", () => {
+  server.listen(PORT, HOST, () => {
     console.log(`[codex-gateway] listening on http://127.0.0.1:${PORT}`);
     console.log(`[codex-gateway] workspace root: ${ROOT_DIR}`);
   });
