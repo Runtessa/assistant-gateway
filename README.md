@@ -49,8 +49,11 @@ default. Use TLS between hosts and keep the service on a private network. HMAC
 authenticates requests; it does not encrypt login data or attachment bytes.
 Codex subprocesses receive an allowlist of transport/locale settings and their own
 profile path, excluding gateway secrets, platform credentials and inherited API
-keys. This does not establish OS filesystem isolation against a compromised process
-running as the same user; that remains a separate production requirement.
+keys. Linux execution also adds a bubblewrap filesystem boundary and delegated
+cgroup budgets. Tenant/chat profiles and native thread state are scoped separately.
+Generated commands have network access disabled; the trusted CLI retains provider
+transport access. Host service files and other profiles are not mounted. See the
+platform native production runbook for delegation and capacity requirements.
 
 Open **Assistant settings → Login in browser** in Studio and complete the
 ChatGPT device authorization. Each Studio user has a separate Codex profile;
