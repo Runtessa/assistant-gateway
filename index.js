@@ -3,6 +3,7 @@ const { PORT, HOST, ROOT_DIR, HISTORY_FILE } = require("./lib/config");
 const { handleRequest } = require("./lib/router");
 const { loadHistoryFromDisk, chatSessions } = require("./lib/chatHistory");
 const { stopAllLoginChildren, sweepExpiredLoginSessions } = require("./lib/loginFlow");
+const { requireGatewaySecret } = require('./lib/requestAuth');
 
 const server = http.createServer(async (req, res) => {
   try {
@@ -19,6 +20,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 const start = async () => {
+  requireGatewaySecret();
   await loadHistoryFromDisk();
   setInterval(() => {
     sweepExpiredLoginSessions();
