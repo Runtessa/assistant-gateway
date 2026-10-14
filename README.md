@@ -8,7 +8,8 @@ Use Node.js 22.13 or newer in the 22.x line. Install the official CLI with
 `npm install -g @openai/codex`, then start this gateway from the platform checkout:
 
 ```sh
-HOST=127.0.0.1 npm --prefix src/codex-gateway start
+node scripts/assistant/init-secret.mjs
+PORT=4040 HOST=127.0.0.1 node --env-file=src/codex-gateway/.env src/codex-gateway/index.js
 ```
 
 In `src/ideNew/.env`, configure the existing gateway:
@@ -16,9 +17,40 @@ In `src/ideNew/.env`, configure the existing gateway:
 ```dotenv
 AGENT_CODEX_GATEWAY_MODE=local
 AGENT_CODEX_GATEWAY_URL=http://127.0.0.1:4040
+ASSISTANT_GATEWAY_SECRET=<private random value shared with the gateway>
 AGENT_CODEX_MODEL=
 AI_MODEL=
 ```
+
+The initializer writes a matching random secret to the two private native
+environment files, preserves existing settings, and refuses conflicting secrets.
+Restart Studio after initialization. Never put the secret in browser configuration.
+Both services require at least 32 bytes of secret material; missing configuration
+stops gateway startup and prevents Studio from sending an unsigned request.
+
+## Request authentication
+
+Every operational request carries an HMAC-SHA256 signature over its HTTP method,
+path/query, encoded identity context and SHA-256 body digest. Contexts bind the
+authorized Studio user and, for workspace requests, tenant. Requests expire after
+60 seconds; a bounded in-memory nonce cache rejects replay within one gateway
+process. Clocks must agree. Replicated gateways need shared replay storage before
+being treated as one authentication boundary.
+
+The gateway derives profile identity from the verified context, rejects conflicting
+body/query identities, and checks ownership before reading or updating a login
+session. Tenant execution requires tenant workspace metadata and cannot fall back
+to repository execution. Repository mode requires both an explicit server setting
+and a separately signed repository scope; Studio sends tenant scopes only.
+Workspace directory keys hash the tenant/chat pair to prevent delimiter collisions.
+
+Only minimal health/version probes are public. Native startup binds loopback by
+default. Use TLS between hosts and keep the service on a private network. HMAC
+authenticates requests; it does not encrypt login data or attachment bytes.
+Codex subprocesses receive an allowlist of transport/locale settings and their own
+profile path, excluding gateway secrets, platform credentials and inherited API
+keys. This does not establish OS filesystem isolation against a compromised process
+running as the same user; that remains a separate production requirement.
 
 Open **Assistant settings → Login in browser** in Studio and complete the
 ChatGPT device authorization. Each Studio user has a separate Codex profile;

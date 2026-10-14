@@ -27,6 +27,7 @@ RUN npm install --omit=dev --ignore-scripts --no-audit --no-fund \
 COPY .docker-build/codex-gateway/dist ./dist
 
 ENV PORT=4040
+ENV HOST=0.0.0.0
 ENV WORKSPACE_ROOT=/workspace
 ENV CODEX_GATEWAY_HISTORY_FILE=/data/history.json
 ENV CODEX_GATEWAY_PROFILES_DIR=/data/profiles
